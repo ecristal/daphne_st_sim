@@ -1,0 +1,6 @@
+.vscode
+*.jou 
+*.log 
+*.pb 
+*.wdb 
+*.o

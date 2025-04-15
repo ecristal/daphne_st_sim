@@ -1,0 +1,17 @@
+vhdl work hdl_files/crc20_update.vhd
+vhdl work hdl_files/daphne2_package.vhd
+vhdl work hdl_files/trig/eia_selftrigger/st_xc_filt.vhd
+vhdl work hdl_files/trig/eia_selftrigger/st_xc.vhd
+vhdl work hdl_files/trig/eia_selftrigger/trig_xc.vhd
+vhdl work hdl_files/trig/ciemat_selftrigger/Configurable_CFD.vhd
+vhdl work hdl_files/trig/ciemat_selftrigger/LocalPrimitives_CIEMAT.vhd
+vhdl work hdl_files/trig/ciemat_selftrigger/PeakDetector_SelfTrigger_CIEMAT.vhd
+vhdl work hdl_files/trig/ciemat_selftrigger/Self_Trigger_Primitive_Calculation.vhd
+verilog work hdl_files/trig/bicocca_selftrigger_filters/hpf_pedestal_recovery_filter_trigger.v
+verilog work hdl_files/trig/bicocca_selftrigger_filters/IIRFilter_afe_integrator_optimized.v
+verilog work hdl_files/trig/bicocca_selftrigger_filters/k_low_pass_filter.v
+verilog work hdl_files/trig/bicocca_selftrigger_filters/moving_integrator_filter.v
+vhdl work hdl_files/trig/trig.vhd
+vhdl work hdl_files/trig/stc.vhd
+vhdl work hdl_files/trig/st40_top.vhd
+verilog work hdl_files/trig/st40_top_wrapper.v

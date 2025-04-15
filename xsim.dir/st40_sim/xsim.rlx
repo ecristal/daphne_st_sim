@@ -1,0 +1,12 @@
+
+{ 
+    crc :  16217605172339338750  , 
+    ccp_crc :  0  , 
+    cmdline : " work.st40_top_wrapper --incr --relax -L work -L unisims_ver -L unimacro_ver -L secureip -dll -s st40_sim -debug wave" , 
+    buildDate : "May 22 2024" , 
+    buildTime : "18:54:44" , 
+    linkCmd : "/usr/bin/gcc -Wa,-W  -O -fPIC  -m64  -shared  -Wl,--no-as-needed  -Wl,--unresolved-symbols=ignore-all  -o \"xsim.dir/st40_sim/xsimk.so\"   \"xsim.dir/st40_sim/obj/xsim_0.lnx64.o\" \"xsim.dir/st40_sim/obj/xsim_1.lnx64.o\" \"xsim.dir/st40_sim/obj/xsim_2.lnx64.o\" \"xsim.dir/st40_sim/obj/xsim_3.lnx64.o\" \"xsim.dir/st40_sim/obj/xsim_4.lnx64.o\" \"xsim.dir/st40_sim/obj/xsim_5.lnx64.o\" \"xsim.dir/st40_sim/obj/xsim_6.lnx64.o\" \"xsim.dir/st40_sim/obj/xsim_7.lnx64.o\" \"xsim.dir/st40_sim/obj/xsim_8.lnx64.o\" \"xsim.dir/st40_sim/obj/xsim_9.lnx64.o\" \"xsim.dir/st40_sim/obj/xsim_10.lnx64.o\" \"xsim.dir/st40_sim/obj/xsim_11.lnx64.o\" \"xsim.dir/st40_sim/obj/xsim_12.lnx64.o\" \"xsim.dir/st40_sim/obj/xsim_13.lnx64.o\" \"xsim.dir/st40_sim/obj/xsim_14.lnx64.o\" \"xsim.dir/st40_sim/obj/xsim_15.lnx64.o\" \"xsim.dir/st40_sim/obj/xsim_16.lnx64.o\" -L\"/opt/Xilinx/Vivado/2024.1/lib/lnx64.o\" -lrdi_simulator_kernel    -L/opt/Xilinx/Vivado/2024.1/lib/lnx64.o/../../tps/lnx64/gcc-9.3.0/bin/../lib64 -Wl,--disable-new-dtags -Wl,-rpath=/opt/Xilinx/Vivado/2024.1/lib/lnx64.o/../../tps/lnx64/gcc-9.3.0/bin/../lib64 -lrdi_simbridge_kernel" , 
+    aggregate_nets : 
+    [ 
+    ] 
+} 

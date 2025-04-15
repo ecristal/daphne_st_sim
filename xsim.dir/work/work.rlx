@@ -1,0 +1,21 @@
+0.7
+2020.2
+May 22 2024
+18:54:44
+/home/cristaldo/Documents/hdl_simulations/st40_top_simulation/hdl_files/crc20_update.vhd,1744378752,vhdl,,,,crc_ol,,secureip;unimacro_ver;unisims_ver;work,,,,,,
+/home/cristaldo/Documents/hdl_simulations/st40_top_simulation/hdl_files/daphne2_package.vhd,1744378752,vhdl,/home/cristaldo/Documents/hdl_simulations/st40_top_simulation/hdl_files/trig/st40_top.vhd,,,daphne2_package,,secureip;unimacro_ver;unisims_ver;work,,,,,,
+/home/cristaldo/Documents/hdl_simulations/st40_top_simulation/hdl_files/trig/bicocca_selftrigger_filters/IIRFilter_afe_integrator_optimized.v,1744378752,verilog,,,,IIRFilter_afe_integrator_optimized,,secureip;unimacro_ver;unisims_ver;work,,,,,,
+/home/cristaldo/Documents/hdl_simulations/st40_top_simulation/hdl_files/trig/bicocca_selftrigger_filters/hpf_pedestal_recovery_filter_trigger.v,1744378752,verilog,,,,hpf_pedestal_recovery_filter_trigger,,secureip;unimacro_ver;unisims_ver;work,,,,,,
+/home/cristaldo/Documents/hdl_simulations/st40_top_simulation/hdl_files/trig/bicocca_selftrigger_filters/k_low_pass_filter.v,1744378752,verilog,,,,k_low_pass_filter,,secureip;unimacro_ver;unisims_ver;work,,,,,,
+/home/cristaldo/Documents/hdl_simulations/st40_top_simulation/hdl_files/trig/bicocca_selftrigger_filters/moving_integrator_filter.v,1744378752,verilog,,,,moving_integrator_filter,,secureip;unimacro_ver;unisims_ver;work,,,,,,
+/home/cristaldo/Documents/hdl_simulations/st40_top_simulation/hdl_files/trig/ciemat_selftrigger/Configurable_CFD.vhd,1744378752,vhdl,,,,configurable_cfd,,secureip;unimacro_ver;unisims_ver;work,,,,,,
+/home/cristaldo/Documents/hdl_simulations/st40_top_simulation/hdl_files/trig/ciemat_selftrigger/LocalPrimitives_CIEMAT.vhd,1744378752,vhdl,,,,localprimitives_ciemat,,secureip;unimacro_ver;unisims_ver;work,,,,,,
+/home/cristaldo/Documents/hdl_simulations/st40_top_simulation/hdl_files/trig/ciemat_selftrigger/PeakDetector_SelfTrigger_CIEMAT.vhd,1744378752,vhdl,,,,peakdetector_selftrigger_ciemat,,secureip;unimacro_ver;unisims_ver;work,,,,,,
+/home/cristaldo/Documents/hdl_simulations/st40_top_simulation/hdl_files/trig/ciemat_selftrigger/Self_Trigger_Primitive_Calculation.vhd,1744378752,vhdl,,,,self_trigger_primitive_calculation,,secureip;unimacro_ver;unisims_ver;work,,,,,,
+/home/cristaldo/Documents/hdl_simulations/st40_top_simulation/hdl_files/trig/eia_selftrigger/st_xc.vhd,1744378752,vhdl,,,,st_xc,,secureip;unimacro_ver;unisims_ver;work,,,,,,
+/home/cristaldo/Documents/hdl_simulations/st40_top_simulation/hdl_files/trig/eia_selftrigger/st_xc_filt.vhd,1744378752,vhdl,,,,st_xc_filt,,secureip;unimacro_ver;unisims_ver;work,,,,,,
+/home/cristaldo/Documents/hdl_simulations/st40_top_simulation/hdl_files/trig/eia_selftrigger/trig_xc.vhd,1744378752,vhdl,,,,trig_xc,,secureip;unimacro_ver;unisims_ver;work,,,,,,
+/home/cristaldo/Documents/hdl_simulations/st40_top_simulation/hdl_files/trig/st40_top.vhd,1744638346,vhdl,,,,st40_top,,secureip;unimacro_ver;unisims_ver;work,,,,,,
+/home/cristaldo/Documents/hdl_simulations/st40_top_simulation/hdl_files/trig/st40_top_wrapper.v,1744642694,verilog,,,,st40_top_wrapper,,secureip;unimacro_ver;unisims_ver;work,,,,,,
+/home/cristaldo/Documents/hdl_simulations/st40_top_simulation/hdl_files/trig/stc.vhd,1744378752,vhdl,,,,stc,,secureip;unimacro_ver;unisims_ver;work,,,,,,
+/home/cristaldo/Documents/hdl_simulations/st40_top_simulation/hdl_files/trig/trig.vhd,1744378752,vhdl,,,,trig,,secureip;unimacro_ver;unisims_ver;work,,,,,,
