@@ -195,7 +195,7 @@ void daphne_st_simulator::daphne_st_top_hdl_simulator::initialize_design(){
         {"enable", {this->zero_val, this->zero_val}},
         {"afe_comp_enable", {this->zero_val, this->zero_val}},
         {"invert_enable", {this->zero_val, this->zero_val}},
-        {"st_40_signals_enable_reg", {this->one_val}},
+        {"st_40_signals_enable_reg", {this->zero_val}},
         {"st_40_selftrigger_4_spybuffer", {this->zero_val}},
         {"filter_output_selector", {this->zero_val}},
         {"aclk", {this->zero_val}},
@@ -298,6 +298,49 @@ void daphne_st_simulator::daphne_st_top_hdl_simulator::initialize_design(){
         {"Rcount", {this->zero_val, this->zero_val}}
     };
 
+    this->signal_input_map = {
+        {0, "afe_dat_0_0"},
+        {1, "afe_dat_0_1"},
+        {2, "afe_dat_0_2"},
+        {3, "afe_dat_0_3"},
+        {4, "afe_dat_0_4"},
+        {5, "afe_dat_0_5"},
+        {6, "afe_dat_0_6"},
+        {7, "afe_dat_0_7"},
+        {8, "afe_dat_1_0"},
+        {9, "afe_dat_1_1"},
+        {10, "afe_dat_1_2"},
+        {11, "afe_dat_1_3"},
+        {12, "afe_dat_1_4"},
+        {13, "afe_dat_1_5"},
+        {14, "afe_dat_1_6"},
+        {15, "afe_dat_1_7"},
+        {16, "afe_dat_2_0"},
+        {17, "afe_dat_2_1"},
+        {18, "afe_dat_2_2"},
+        {19, "afe_dat_2_3"},
+        {20, "afe_dat_2_4"},
+        {21, "afe_dat_2_5"},
+        {22, "afe_dat_2_6"},
+        {23, "afe_dat_2_7"},
+        {24, "afe_dat_3_0"},
+        {25, "afe_dat_3_1"},
+        {26, "afe_dat_3_2"},
+        {27, "afe_dat_3_3"},
+        {28, "afe_dat_3_4"},
+        {29, "afe_dat_3_5"},
+        {30, "afe_dat_3_6"},
+        {31, "afe_dat_3_7"},
+        {32, "afe_dat_4_0"},
+        {33, "afe_dat_4_1"},
+        {34, "afe_dat_4_2"},
+        {35, "afe_dat_4_3"},
+        {36, "afe_dat_4_4"},
+        {37, "afe_dat_4_5"},
+        {38, "afe_dat_4_6"},
+        {39, "afe_dat_4_7"}
+    };
+
     this->get_module_port_numbers();
     this->set_port_initial_values();
 }
@@ -352,19 +395,19 @@ void daphne_st_simulator::daphne_st_top_hdl_simulator::cycle_clocks(){
     this->loader->put_value(this->port_map["aclk"].port_number, &this->zero_val);
     this->loader->put_value(this->port_map["fclk"].port_number, &this->zero_val);
     this->loader->put_value(this->port_map["oeiclk"].port_number, &this->zero_val);
-    this->loader->run(1);
+    this->loader->run(4000);
     this->loader->put_value(this->port_map["aclk"].port_number, &this->zero_val);
     this->loader->put_value(this->port_map["fclk"].port_number, &this->one_val);
     this->loader->put_value(this->port_map["oeiclk"].port_number, &this->one_val);
-    this->loader->run(1);
+    this->loader->run(4000);
     this->loader->put_value(this->port_map["aclk"].port_number, &this->one_val);
     this->loader->put_value(this->port_map["fclk"].port_number, &this->zero_val);
     this->loader->put_value(this->port_map["oeiclk"].port_number, &this->zero_val);
-    this->loader->run(1);
+    this->loader->run(4000);
     this->loader->put_value(this->port_map["aclk"].port_number, &this->one_val);
     this->loader->put_value(this->port_map["fclk"].port_number, &this->one_val);
     this->loader->put_value(this->port_map["oeiclk"].port_number, &this->one_val);
-    this->loader->run(1);
+    this->loader->run(4000);
 }
 
 void daphne_st_simulator::daphne_st_top_hdl_simulator::run_n_cycles(const int & n_cycles){
@@ -384,15 +427,127 @@ void daphne_st_simulator::daphne_st_top_hdl_simulator::reset_design(){
 }
 
 void daphne_st_simulator::daphne_st_top_hdl_simulator::set_configuration(const std::string &file){
+    try{
+        using json = nlohmann::json;
+        std::ifstream config_file(file);
+        if (!config_file.is_open()) {
+            std::cerr << "Error opening configuration file: " << file << std::endl;
+            return;
+        }
+        json config = json::parse(config_file);
+        //std::string json_metadata = config["metadata"];
 
+        //std::cout << json_metadata << std::endl;
+        auto selftrigger_config = config["devices"][0]["self_trigger"];
+        uint64_t enabled_compensator = 0;
+        uint64_t enabled_inverter = 0;
+        uint64_t enabled_channels = 0;
+        this->enabled_channels = {};
+        for(const auto &en_ch : config["devices"][0]["self_trigger"]["enable_compensator"]){
+            enabled_compensator |= (1ULL << en_ch.get<int>());
+            this->enabled_channels.push_back(en_ch.get<int>());
+        }
+        for(auto en_ch : config["devices"][0]["self_trigger"]["enable_inverter"]){
+            enabled_inverter |= (1ULL << en_ch.get<int>());
+        }
+        for(auto en_ch : config["devices"][0]["channels"]["indices"]){
+            enabled_channels |= (1ULL << en_ch.get<int>());
+        }
+        std::cout << "Enabled compensator: " << std::bitset<64>(enabled_compensator) << std::endl;
+        std::cout << "Enabled inverter: " << std::bitset<64>(enabled_inverter) << std::endl;
+        std::cout << "Enabled channels: " << std::bitset<64>(enabled_channels) << std::endl;
+        this->port_values["enable"][0].aVal = (enabled_channels & 0xFFFFFFFF);
+        this->port_values["enable"][1].aVal = ((enabled_channels >> 32) & 0xFFFFFFFF);
+        this->port_values["afe_comp_enable"][0].aVal = (enabled_compensator & 0xFFFFFFFF);
+        this->port_values["afe_comp_enable"][1].aVal = ((enabled_compensator >> 32) & 0xFFFFFFFF);
+        this->port_values["invert_enable"][0].aVal = (enabled_inverter & 0xFFFFFFFF);
+        this->port_values["invert_enable"][1].aVal = ((enabled_inverter >> 32) & 0xFFFFFFFF);
+
+        std::string filter_mode_conf = config["devices"][0]["self_trigger"]["filter_mode"].get<std::string>();
+        std::string slope_mode_conf = config["devices"][0]["self_trigger"]["slope_mode"].get<std::string>();
+        uint32_t slope_threshold = config["devices"][0]["self_trigger"]["slope_threshold"].get<std::uint32_t>();
+        uint32_t pedestal_length = config["devices"][0]["self_trigger"]["pedestal_length"].get<std::uint32_t>();
+        uint32_t spybuffer_channel = config["devices"][0]["self_trigger"]["spybuffer_channel"].get<std::uint32_t>();
+        uint64_t correlation_threshold = config["devices"][0]["self_trigger"]["self_trigger_xcorr"]["correlation_threshold"].get<std::uint64_t>();
+        uint64_t discrimination_threshold = config["devices"][0]["self_trigger"]["self_trigger_xcorr"]["discrimination_threshold"].get<std::uint64_t>();
+
+        uint64_t threshold_xc_val = 0;
+        threshold_xc_val = ((discrimination_threshold  & 0x3FFF) << 28) | (correlation_threshold & 0xFFFFFFF);
+        this->port_values["threshold_xc"][0].aVal = ( threshold_xc_val & 0xFFFFFFFF);
+        this->port_values["threshold_xc"][1].aVal = (( threshold_xc_val >> 32) & 0xFFFFFFFF);
+
+        std::cout << "Filter mode: " << filter_mode_conf << std::endl;
+        std::cout << "Slope mode: " << slope_mode_conf << std::endl;
+        std::cout << "Slope threshold: " << slope_threshold << std::endl;
+        std::cout << "Pedestal length: " << pedestal_length << std::endl;
+        std::cout << "Spybuffer channel: " << spybuffer_channel << std::endl;
+        std::cout << "Correlation threshold: " << correlation_threshold << std::endl;
+        std::cout << "Discrimination threshold: " << discrimination_threshold << std::endl;
+
+        if(filter_mode_conf == "compensated") {
+            this->port_values["filter_output_selector"][0].aVal = (0 & 0x3);
+        } else if(filter_mode_conf == "inverted") {
+            this->port_values["filter_output_selector"][0].aVal = (1 & 0x3);
+        } else if(filter_mode_conf == "xcorr") {
+            this->port_values["filter_output_selector"][0].aVal = (2 & 0x3);
+        } else if(filter_mode_conf == "raw") {
+            this->port_values["filter_output_selector"][0].aVal = (3 & 0x3);
+        } else {
+            throw std::invalid_argument("Invalid filter mode configuration");
+        }
+        
+        if (slope_mode_conf == "20") {
+            this->port_values["st_config"][0].aVal = ((1ULL << 6) & 0xFFFFFFFF);
+        }
+
+        this->port_values["st_config"][0].aVal |= ((slope_threshold << 7) & 0xFFFFFFFF);
+        this->port_values["signal_delay"][0].aVal = (uint16_t(pedestal_length/8) & 0xFFFFFFFF);
+        this->port_values["st_40_signals_enable_reg"][0].aVal = (spybuffer_channel);
+
+        this->set_port_initial_values();
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error setting configuration file in " 
+              << __FILE__ << ":" << __LINE__ << " (" << __func__ << "): "
+              << e.what() << std::endl;
+    }
+    catch (...) {
+        std::cerr << "Unknown error occurred while setting configuration file." << std::endl;
+    }
+}
+
+void daphne_st_simulator::daphne_st_top_hdl_simulator::set_input_signal_ports(std::vector<uint16_t> &input_data){
+    // this function is used to set the input values
+    int number_of_enabled_channels = this->enabled_channels.size();
+    int length_of_input_data = input_data.size();
+    if(number_of_enabled_channels != length_of_input_data){
+        std::cerr << "ERROR: Number of enabled channels and length of input data do not match" << std::endl;
+        exit(1);
+    }
+    for(int i = 0; i < number_of_enabled_channels; i++){
+        this->port_values[this->signal_input_map[this->enabled_channels[i]]][0].aVal = input_data[i];
+        this->set_port_value(this->signal_input_map[this->enabled_channels[i]]);
+    }
+}
+
+std::vector<uint16_t> daphne_st_simulator::daphne_st_top_hdl_simulator::get_channels_input_data(const std::vector<uint16_t> &input_data, const int &iteration, const int &length_of_waveforms){
+    
+    std::vector<uint16_t> channels_input_data;
+    for(int i = 0; i < this->enabled_channels.size(); i++){
+        channels_input_data.push_back(input_data[i*length_of_waveforms + iteration]);
+    }
+    return channels_input_data;
 }
 
 std::vector<uint32_t> daphne_st_simulator::daphne_st_top_hdl_simulator::run_simulation(const std::vector<uint16_t> &input_data){
     // this function is used to run the simulation
-    std::vector<uint32_t> simulation_stream;
-    for(auto& it: input_data){
-        this->port_values["afe_dat_0_0"][0].aVal = it;
-        this->set_port_value("afe_dat_0_0");
+    int number_of_enabled_channels = this->enabled_channels.size();
+    int length_of_input_data = input_data.size()/number_of_enabled_channels;
+    std::vector<uint32_t> simulation_stream; //consider preallocation
+    this->reset_design();
+    for(int i = 0; i < length_of_input_data; i++){
+        std::vector<uint16_t> channels_input_data = this->get_channels_input_data(input_data, i, length_of_input_data);
+        this->set_input_signal_ports(channels_input_data);
         this->cycle_clocks();
         this->get_port_value("dout");
         simulation_stream.push_back(this->port_values["dout"][0].aVal);

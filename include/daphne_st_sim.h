@@ -6,10 +6,13 @@
 #include <vector>
 #include <unordered_map>
 #include <iostream>
+#include <fstream>
 #include <memory>
+#include <bitset>
 
 #include "xsi_loader.h"
 #include "fddetdataformats/DAPHNEFrame.hpp"
+#include "nlohmann/json.hpp"
 
 namespace daphne_st_simulator{
 
@@ -26,6 +29,9 @@ private:
     std::string simkernel_libname;
     std::unordered_map<std::string, port_attribute> port_map;
     std::unordered_map<std::string, std::vector<s_xsi_vlog_logicval>> port_values;
+    std::unordered_map<uint16_t, std::string> signal_input_map;
+
+    std::vector<uint16_t> enabled_channels;
 
     std::unique_ptr<Xsi::Loader> loader;
     s_xsi_setup_info info;
@@ -46,6 +52,8 @@ private:
     void cycle_clocks();
     void run_n_cycles(const int & n_cycles);
     void reset_design();
+    void set_input_signal_ports(std::vector<uint16_t> &input_data);
+    std::vector<uint16_t> get_channels_input_data(const std::vector<uint16_t> &input_data, const int &iteration, const int &length_of_waveforms);
     
 public:
     daphne_st_top_hdl_simulator(const std::string &design_libname, const std::string &simkernel_libname);
@@ -53,6 +61,7 @@ public:
     ~daphne_st_top_hdl_simulator();
     void set_configuration(const std::string &configFile); // Here use the same configuration as in the DAQ configuration file.
     void close();
+    std::vector<uint16_t> get_enabled_channels() const { return this->enabled_channels;}
     std::vector<uint32_t> run_simulation(const std::vector<uint16_t> &input_data);
     std::vector<dunedaq::fddetdataformats::DAPHNEFrame> decode_simulation_stream(const std::vector<uint32_t> &simulation_stream);
 };
