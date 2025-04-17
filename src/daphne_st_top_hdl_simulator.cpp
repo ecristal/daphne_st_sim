@@ -387,7 +387,7 @@ void daphne_st_simulator::daphne_st_top_hdl_simulator::get_port_value(const std:
     this->loader->get_value(port_num, this->port_values[port_name].data());
 }
 
-void daphne_st_simulator::daphne_st_top_hdl_simulator::cycle_clocks(){
+void daphne_st_simulator::daphne_st_top_hdl_simulator::cycle_a_clock(){
     //this function is used to step bot clocks
     // aclk is 62.5 Mhz and fclk will be considered doubled to 125 Mhz
     // so we will step aclk every 16 ns and fclk every 8 ns
@@ -395,25 +395,59 @@ void daphne_st_simulator::daphne_st_top_hdl_simulator::cycle_clocks(){
     this->loader->put_value(this->port_map["aclk"].port_number, &this->zero_val);
     this->loader->put_value(this->port_map["fclk"].port_number, &this->zero_val);
     this->loader->put_value(this->port_map["oeiclk"].port_number, &this->zero_val);
-    this->loader->run(4000);
+    this->loader->run(this->clk_sim_step);
     this->loader->put_value(this->port_map["aclk"].port_number, &this->zero_val);
     this->loader->put_value(this->port_map["fclk"].port_number, &this->one_val);
     this->loader->put_value(this->port_map["oeiclk"].port_number, &this->one_val);
-    this->loader->run(4000);
+    this->loader->run(this->clk_sim_step);
     this->loader->put_value(this->port_map["aclk"].port_number, &this->one_val);
     this->loader->put_value(this->port_map["fclk"].port_number, &this->zero_val);
     this->loader->put_value(this->port_map["oeiclk"].port_number, &this->zero_val);
-    this->loader->run(4000);
+    this->loader->run(this->clk_sim_step);
     this->loader->put_value(this->port_map["aclk"].port_number, &this->one_val);
     this->loader->put_value(this->port_map["fclk"].port_number, &this->one_val);
     this->loader->put_value(this->port_map["oeiclk"].port_number, &this->one_val);
-    this->loader->run(4000);
+    this->loader->run(this->clk_sim_step);
 }
 
-void daphne_st_simulator::daphne_st_top_hdl_simulator::run_n_cycles(const int & n_cycles){
+void daphne_st_simulator::daphne_st_top_hdl_simulator::cycle_f_clock(){
+    //this function is used to step bot clocks
+    // aclk is 62.5 Mhz and fclk will be considered doubled to 125 Mhz
+    // so we will step aclk every 16 ns and fclk every 8 ns
+    // constants
+    if(!this->clock_tilt_flag){
+        this->loader->put_value(this->port_map["aclk"].port_number, &this->zero_val);
+        this->loader->put_value(this->port_map["fclk"].port_number, &this->zero_val);
+        this->loader->put_value(this->port_map["oeiclk"].port_number, &this->zero_val);
+        this->loader->run(this->clk_sim_step);
+        this->loader->put_value(this->port_map["aclk"].port_number, &this->zero_val);
+        this->loader->put_value(this->port_map["fclk"].port_number, &this->one_val);
+        this->loader->put_value(this->port_map["oeiclk"].port_number, &this->one_val);
+        this->loader->run(this->clk_sim_step);
+    }else{
+        this->loader->put_value(this->port_map["aclk"].port_number, &this->one_val);
+        this->loader->put_value(this->port_map["fclk"].port_number, &this->zero_val);
+        this->loader->put_value(this->port_map["oeiclk"].port_number, &this->zero_val);
+        this->loader->run(this->clk_sim_step);
+        this->loader->put_value(this->port_map["aclk"].port_number, &this->one_val);
+        this->loader->put_value(this->port_map["fclk"].port_number, &this->one_val);
+        this->loader->put_value(this->port_map["oeiclk"].port_number, &this->one_val);
+        this->loader->run(this->clk_sim_step);
+    }
+    this->clock_tilt_flag = !this->clock_tilt_flag;
+}
+
+void daphne_st_simulator::daphne_st_top_hdl_simulator::run_n_cycles(const int & n_cycles, const std::string & which_clock){
     // this function is used to run the simulation for n cycles
     for(int i = 0; i < n_cycles; i++){
-        this->cycle_clocks();
+        if(which_clock == "fclk"){
+            this->cycle_f_clock();
+        }else if(which_clock == "aclk"){
+            this->cycle_a_clock();
+        }else{
+            std::cerr << "ERROR: " << which_clock << " not found" << std::endl;
+            exit(1);
+        }
     }
 }
 
@@ -421,7 +455,7 @@ void daphne_st_simulator::daphne_st_top_hdl_simulator::reset_design(){
     // this function is used to reset the design
     this->loader->put_value(this->port_map["reset_aclk"].port_number, &this->one_val);
     this->loader->put_value(this->port_map["reset_fclk"].port_number, &this->one_val);
-    this->run_n_cycles(320);
+    this->run_n_cycles(320, "aclk");
     this->loader->put_value(this->port_map["reset_aclk"].port_number, &this->zero_val);
     this->loader->put_value(this->port_map["reset_fclk"].port_number, &this->zero_val);
 }
@@ -539,29 +573,74 @@ std::vector<uint16_t> daphne_st_simulator::daphne_st_top_hdl_simulator::get_chan
     return channels_input_data;
 }
 
-std::vector<uint32_t> daphne_st_simulator::daphne_st_top_hdl_simulator::run_simulation(const std::vector<uint16_t> &input_data){
+void daphne_st_simulator::daphne_st_top_hdl_simulator::run_simulation(const std::vector<uint16_t> &input_data){
     // this function is used to run the simulation
     int number_of_enabled_channels = this->enabled_channels.size();
     int length_of_input_data = input_data.size()/number_of_enabled_channels;
-    std::vector<uint32_t> simulation_stream; //consider preallocation
     this->reset_design();
     for(int i = 0; i < length_of_input_data; i++){
         std::vector<uint16_t> channels_input_data = this->get_channels_input_data(input_data, i, length_of_input_data);
         this->set_input_signal_ports(channels_input_data);
-        this->cycle_clocks();
+        this->cycle_f_clock();
         this->get_port_value("dout");
-        simulation_stream.push_back(this->port_values["dout"][0].aVal);
+        this->push_back_port_value(this->simulation_stream, this->port_values["dout"][0].aVal);
+        // Two times 
+        this->cycle_f_clock();
+        this->get_port_value("dout");
+        this->push_back_port_value(this->simulation_stream, this->port_values["dout"][0].aVal);
     }
-    return simulation_stream;
+    std::cout << "Finished loading data into the simulator." << std::endl;
+    std::cout << "Waiting for end of stream signal..." << std::endl;
+    this->port_values["enable"][0].aVal = 0;
+    this->port_values["enable"][1].aVal = 0;
+    this->set_port_value("enable");
+    int bc_counter = 0;
+    while(this->port_values["dout"][0].aVal == 0xbc && bc_counter <= this->ncycles_stop_condition && !this->sof_flag){
+        this->cycle_f_clock();
+        bc_counter++;
+        this->get_port_value("dout");
+        this->push_back_port_value(this->simulation_stream, this->port_values["dout"][0].aVal);
+    }
+    if(bc_counter >= this->ncycles_stop_condition){
+        std::cout << "No packets found: Simulation stopped after"
+                  << this->ncycles_stop_condition
+                  << " cycles without receiving end of stream signal." << std::endl;
+    }else{
+        while(!this->eof_flag){
+            this->cycle_f_clock();
+            this->get_port_value("dout");
+            this->push_back_port_value(this->simulation_stream, this->port_values["dout"][0].aVal);
+            bc_counter = 0;
+            if((this->port_values["dout"][0].aVal & 0xFF) == 0xDC){
+                std::cout << "0xDC found. Waiting for next packet..." << std::endl;
+                this->cycle_f_clock();
+                this->get_port_value("dout");
+                this->push_back_port_value(this->simulation_stream, this->port_values["dout"][0].aVal);
+                while(this->port_values["dout"][0].aVal == 0xbc && bc_counter <= this->ncycles_stop_condition){
+                    this->cycle_f_clock();
+                    this->get_port_value("dout");
+                    this->push_back_port_value(this->simulation_stream, this->port_values["dout"][0].aVal);
+                    bc_counter++;
+                }
+                if(bc_counter >= this->ncycles_stop_condition){
+                    this->eof_flag = true;
+                    std::cout << "Simulation stopped after "  << this->ncycles_stop_condition 
+                              << " cycles without receiving end of stream signal" << std::endl;
+                    std::cout << "Number of packets received: " << this->packet_counter << std::endl;
+                    this->packet_counter = 0;
+                }
+            }
+        }
+    }
 }
 
 std::vector<dunedaq::fddetdataformats::DAPHNEFrame> daphne_st_simulator::daphne_st_top_hdl_simulator::decode_simulation_stream(const std::vector<uint32_t> &simulation_stream){
-    std::vector<dunedaq::fddetdataformats::DAPHNEFrame> frames;
+    std::vector<dunedaq::fddetdataformats::DAPHNEFrame> frame_vector;
     for(auto& it: simulation_stream){
         dunedaq::fddetdataformats::DAPHNEFrame frame;
-        frames.push_back(frame);
+        frame_vector.push_back(frame);
     }
-    return frames;
+    return frame_vector;
 }
 
 void daphne_st_simulator::daphne_st_top_hdl_simulator::append_logic_val_bit_to_string(std::string& retVal, int aVal, int bVal)
@@ -622,4 +701,15 @@ void daphne_st_simulator::daphne_st_top_hdl_simulator::close(){
     } catch (...) {
         std::cerr << "Unknown error occurred while closing the simulator." << std::endl;
     }
+}
+
+void daphne_st_simulator::daphne_st_top_hdl_simulator::push_back_port_value(std::vector<uint32_t> &stream, const uint32_t &value){
+    // this function is used to push back the value to the stream
+    stream.push_back(value);
+    if((value & 0xFF) == 0x3C){
+        this->packet_counter++;
+        this->sof_flag = true;
+        std::cout << "Packet found. Packet number: " << this->packet_counter << std::endl;
+    }
+
 }

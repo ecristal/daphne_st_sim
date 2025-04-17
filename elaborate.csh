@@ -22,4 +22,4 @@ echo "Cleaning up previous simulation artifacts..."
 rm -rf xsim.dir *.jou *.log *.pb *.wdb *.o $OUT_EXE
 
 # Compile the HDL design into a simulatable Shared Library
-$XSIM_ELAB work.st40_top_wrapper -prj selftrigger_project.prj --incr --relax -L work -L unisims_ver -L unimacro_ver -L secureip -dll -s $OUT_SIM_SNAPSHOT -debug wave -log elaborate.log
+$XSIM_ELAB work.st40_top_wrapper -prj selftrigger_project.prj -L work -L unisims_ver -L unimacro_ver -L secureip -dll -s $OUT_SIM_SNAPSHOT -debug off --O3 --timescale 1ns/1ps --override_timeunit --override_timeprecision -log elaborate.log

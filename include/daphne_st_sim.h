@@ -31,6 +31,20 @@ private:
     std::unordered_map<std::string, std::vector<s_xsi_vlog_logicval>> port_values;
     std::unordered_map<uint16_t, std::string> signal_input_map;
 
+    std::vector<uint32_t> simulation_stream = {}; //consider preallocation
+
+    // Flags.
+    bool sof_flag = false; // Start of frame flag
+    bool eof_flag = false; // End of frame flag
+    bool clock_tilt_flag = false; // Clock tilt flag
+
+    uint64_t clk_sim_step = 40; // 4000 ps.
+
+    // counters
+    uint64_t packet_counter = 0;
+
+    uint16_t ncycles_stop_condition = 2500;
+
     std::vector<uint16_t> enabled_channels;
 
     std::unique_ptr<Xsi::Loader> loader;
@@ -49,10 +63,12 @@ private:
     void set_port_initial_values();
     void set_port_value(const std::string &port_name);
     void get_port_value(const std::string &port_name);
-    void cycle_clocks();
-    void run_n_cycles(const int & n_cycles);
+    void cycle_a_clock();
+    void cycle_f_clock();
+    void run_n_cycles(const int & n_cycles, const std::string & which_clock);
     void reset_design();
     void set_input_signal_ports(std::vector<uint16_t> &input_data);
+    void push_back_port_value(std::vector<uint32_t> &stream, const uint32_t &value);
     std::vector<uint16_t> get_channels_input_data(const std::vector<uint16_t> &input_data, const int &iteration, const int &length_of_waveforms);
     
 public:
@@ -61,8 +77,11 @@ public:
     ~daphne_st_top_hdl_simulator();
     void set_configuration(const std::string &configFile); // Here use the same configuration as in the DAQ configuration file.
     void close();
-    std::vector<uint16_t> get_enabled_channels() const { return this->enabled_channels;}
-    std::vector<uint32_t> run_simulation(const std::vector<uint16_t> &input_data);
+    const std::vector<uint16_t>& get_enabled_channels() const { return this->enabled_channels;}
+    void run_simulation(const std::vector<uint16_t> &input_data);
+    const std::vector<uint32_t>& get_simulation_stream() const { return this->simulation_stream; }
+    void set_clk_sim_step(const uint64_t &clk_sim_step) { this->clk_sim_step = clk_sim_step; }
+    uint64_t get_clk_sim_step() const { return this->clk_sim_step; }
     std::vector<dunedaq::fddetdataformats::DAPHNEFrame> decode_simulation_stream(const std::vector<uint32_t> &simulation_stream);
 };
 
