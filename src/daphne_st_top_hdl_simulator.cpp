@@ -419,6 +419,11 @@ void daphne_st_simulator::daphne_st_top_hdl_simulator::cycle_f_clock(){
         this->loader->put_value(this->port_map["aclk"].port_number, &this->zero_val);
         this->loader->put_value(this->port_map["fclk"].port_number, &this->zero_val);
         this->loader->put_value(this->port_map["oeiclk"].port_number, &this->zero_val);
+        // timestamp value setting
+        //std::cout << "Timestamp: " << this->timestamp << std::endl;
+        this->port_values["timestamp"][0].aVal = (this->timestamp & 0xFFFFFFFF);
+        this->port_values["timestamp"][1].aVal = ((this->timestamp >> 32) & 0xFFFFFFFF);
+        this->set_port_value("timestamp");
         this->loader->run(this->clk_sim_step);
         this->loader->put_value(this->port_map["aclk"].port_number, &this->zero_val);
         this->loader->put_value(this->port_map["fclk"].port_number, &this->one_val);
@@ -433,6 +438,7 @@ void daphne_st_simulator::daphne_st_top_hdl_simulator::cycle_f_clock(){
         this->loader->put_value(this->port_map["fclk"].port_number, &this->one_val);
         this->loader->put_value(this->port_map["oeiclk"].port_number, &this->one_val);
         this->loader->run(this->clk_sim_step);
+        this->timestamp += 1; // increment timestamp
     }
     this->clock_tilt_flag = !this->clock_tilt_flag;
 }
@@ -479,13 +485,13 @@ void daphne_st_simulator::daphne_st_top_hdl_simulator::set_configuration(const s
         this->enabled_channels = {};
         for(const auto &en_ch : config["devices"][0]["self_trigger"]["enable_compensator"]){
             enabled_compensator |= (1ULL << en_ch.get<int>());
-            this->enabled_channels.push_back(en_ch.get<int>());
         }
         for(auto en_ch : config["devices"][0]["self_trigger"]["enable_inverter"]){
             enabled_inverter |= (1ULL << en_ch.get<int>());
         }
         for(auto en_ch : config["devices"][0]["channels"]["indices"]){
             enabled_channels |= (1ULL << en_ch.get<int>());
+            this->enabled_channels.push_back(en_ch.get<int>());
         }
         std::cout << "Enabled compensator: " << std::bitset<64>(enabled_compensator) << std::endl;
         std::cout << "Enabled inverter: " << std::bitset<64>(enabled_inverter) << std::endl;

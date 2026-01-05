@@ -43,6 +43,8 @@ private:
     // counters
     uint64_t packet_counter = 0;
 
+    uint64_t timestamp = 0;
+
     uint16_t ncycles_stop_condition = 2500;
 
     std::vector<uint16_t> enabled_channels;
