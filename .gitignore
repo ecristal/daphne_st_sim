@@ -4,3 +4,9 @@
 *.pb 
 *.wdb 
 *.o
+*.vdb
+*.xdbg
+*.mem
+*.so
+xsim.dir/
+/selftrigger_simulation

@@ -1,1 +1,0 @@
-"work.st40_top_wrapper" -prj "selftrigger_project.prj" -L "work" -L "unisims_ver" -L "unimacro_ver" -L "secureip" -dll -s "st40_sim" -debug "wave" --O3 --timescale "1ns/1ps" --override_timeunit --override_timeprecision -log "elaborate.log" 
